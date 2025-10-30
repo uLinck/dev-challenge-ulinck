@@ -170,7 +170,7 @@ Abaixo estão os detalhes das modificações realizadas:
      - `Persistence/Migrations/`: Migrações do banco
 
 2. **Melhorias na entidade Domain**
-   - Adicionei construtor específico para criação com `DomainDataResult`
+   - Adicionei construtor específico para criação
    - Criei método `Update()` para atualização dos dados
    - Separei responsabilidades de criação e atualização
 
@@ -195,7 +195,7 @@ Abaixo estão os detalhes das modificações realizadas:
 
 3. **Abstração do WhoisClient**
    - O `WhoisClient` da biblioteca `Whois.NET` é estático, impossibilitando mock direto
-   - Criei um wrapper que implementa a interface, permitindo injeção de dependência
+   - Portanto, criei um wrapper que implementa a interface, permitindo injeção de dependência
    - Isso torna o `DomainService` completamente testável sem depender de chamadas reais ao WHOIS
    - Registrado no container de DI como Singleton
 
