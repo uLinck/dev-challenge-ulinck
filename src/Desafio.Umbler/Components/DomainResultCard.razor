@@ -1,0 +1,62 @@
+@using Desafio.Umbler.Features.DomainContext.Services
+
+@if (DomainData != null)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-12 col-lg-10 col-xl-8">
+            <div class="card shadow-lg" style="background-color: rgba(26, 35, 50, 0.95); border: none;">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <h3 class="text-white mb-0">
+                        <i class="bi bi-globe me-2"></i>
+                        Informações do Domínio
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="d-flex flex-column">
+                                <small class="text-white-50 mb-1">Domínio</small>
+                                <h5 class="text-white mb-0">@DomainData.Name</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex flex-column">
+                                <small class="text-white-50 mb-1">Endereço IP</small>
+                                <h5 class="text-white mb-0">
+                                    @if (!string.IsNullOrEmpty(DomainData.Ip))
+                                    {
+                                        @DomainData.Ip
+                                    }
+                                    else
+                                    {
+                                        <span class="text-warning">Não disponível</span>
+                                    }
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex flex-column">
+                                <small class="text-white-50 mb-1">Hospedado em</small>
+                                <h5 class="text-white mb-0">
+                                    @if (!string.IsNullOrEmpty(DomainData.HostedAt))
+                                    {
+                                        @DomainData.HostedAt
+                                    }
+                                    else
+                                    {
+                                        <span class="text-warning">Não disponível</span>
+                                    }
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public DomainDto? DomainData { get; set; }
+}

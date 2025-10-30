@@ -1,0 +1,49 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            @foreach (var extension in Extensions)
+            {
+                <button class="extension-button rounded-pill px-4 py-2" 
+                        type="button"
+                        @onclick="@(() => HandleClick(extension))"
+                        disabled="@IsLoading">
+                    @extension
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<string> Extensions { get; set; } = new()
+    {
+        ".com.br",
+        ".com",
+        ".net",
+        ".org",
+        ".app"
+    };
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string CurrentSearchText { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> OnExtensionClick { get; set; }
+
+    private async Task HandleClick(string extension)
+    {
+        var cleanValue = System.Text.RegularExpressions.Regex.Replace(
+            CurrentSearchText.Trim(),
+            @"\.(com|net|org|br|com\.br|app|io|dev)$",
+            "",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+        );
+
+        var newValue = cleanValue + extension;
+        await OnExtensionClick.InvokeAsync(newValue);
+    }
+}

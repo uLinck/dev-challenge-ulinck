@@ -1,0 +1,88 @@
+@using Desafio.Umbler.Features.DomainContext.Services
+
+<div class="row justify-content-center mb-4">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <div class="input-group input-group-lg shadow-lg rounded-pill overflow-hidden" style="background-color: #1a2332;">
+            <input type="text" 
+                   class="form-control domain-search-input ps-4 py-3 shadow-none me-1"
+                   placeholder="Digite o Domínio que deseja pesquisar"
+                   value="@SearchText"
+                   @oninput="@(e => UpdateSearchText(e.Value?.ToString() ?? ""))"
+                   @onkeypress="HandleKeyPress"
+                   disabled="@IsLoading"
+                   style="font-size: 1.1rem;">
+            <button class="btn btn-primary search-button px-5 py-3 rounded-pill me-2 my-2 fw-semibold" 
+                    type="button"
+                    @onclick="OnSearch"
+                    disabled="@IsLoading"
+                    style="font-size: 1.1rem;">
+                @if (IsLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Pesquisando...</span>
+                }
+                else
+                {
+                    <span>Pesquisar</span>
+                }
+            </button>
+        </div>
+        
+        @if (HasError && !string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger mt-3 rounded-pill text-center" role="alert">
+                @ErrorMessage
+            </div>
+        }
+
+        @if (ValidationErrors != null && ValidationErrors.Count > 0)
+        {
+            <div class="alert alert-warning mt-3 rounded-3" role="alert">
+                <strong>Erros de validação:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach (var error in ValidationErrors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string SearchText { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> SearchTextChanged { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public bool HasError { get; set; }
+
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    [Parameter]
+    public List<string>? ValidationErrors { get; set; }
+
+    [Parameter]
+    public EventCallback OnSearch { get; set; }
+
+    private async Task UpdateSearchText(string value)
+    {
+        SearchText = value;
+        await SearchTextChanged.InvokeAsync(value);
+    }
+
+    private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !IsLoading)
+        {
+            await OnSearch.InvokeAsync();
+        }
+    }
+}

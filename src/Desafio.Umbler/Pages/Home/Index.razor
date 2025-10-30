@@ -1,0 +1,81 @@
+@page "/"
+@using Desafio.Umbler.Features.DomainContext.Dto
+@using Desafio.Umbler.Features.DomainContext.Services
+@using Desafio.Umbler.Shared.Enum
+@inject IDomainService DomainService
+@inject ILogger<Index> Logger
+
+<PageTitle>Desafio Umbler - Busca de Domínios</PageTitle>
+
+<div class="page-background min-vh-100 d-flex flex-column">
+    <div class="wave-top"></div>
+    <div class="wave-bottom"></div>
+    
+    <div class="container flex-grow-1 d-flex flex-column py-5 position-relative" style="z-index: 1;">
+        
+        <HeroSection />
+
+        <DomainSearchBox @bind-SearchText="searchText"
+                        IsLoading="@isLoading"
+                        HasError="@hasError"
+                        ErrorMessage="@errorMessage"
+                        ValidationErrors="@validationErrors"
+                        OnSearch="@SearchDomain" />
+
+        <DomainExtensionButtons IsLoading="@isLoading"
+                               CurrentSearchText="@searchText"
+                               OnExtensionClick="@((newValue) => searchText = newValue)" />
+
+        <DomainResultCard DomainData="@domainData" />
+    </div>
+</div>
+
+@code {
+    private string searchText = "";
+    private bool isLoading = false;
+    private bool hasError = false;
+    private string errorMessage = "";
+    private List<string>? validationErrors = null;
+    private DomainDto? domainData = null;
+
+    private async Task SearchDomain()
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            errorMessage = "Por favor, digite um domínio para pesquisar.";
+            hasError = true;
+            return;
+        }
+
+        isLoading = true;
+        hasError = false;
+        errorMessage = "";
+        validationErrors = null;
+        domainData = null;
+
+        try
+        {
+            var result = await DomainService.GetAsync(searchText.Trim());
+
+            if (result.Success)
+                domainData = result.Data;
+            else if (result.ErrorType == ServiceErrorTypeEnum.Validation)
+                validationErrors = new List<string> { result.ErrorMessage };
+            else
+            {
+                errorMessage = result.ErrorMessage;
+                hasError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Erro ao buscar domínio {Domain}", searchText);
+            errorMessage = "Erro ao buscar informações do domínio. Tente novamente.";
+            hasError = true;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
