@@ -38,12 +38,11 @@ namespace Desafio.Umbler.Features.DomainContext.Services
 
         public async Task<ServiceResult<DomainDto>> GetAsync(string domainName)
         {
-            _logger.LogInformation("Validando coerência do domínio: '{DomainName}'", domainName);
             var (isValid, error) = _domainValidator.Validate(domainName);
             
             if (!isValid)
             {
-                _logger.LogWarning("Validação falhou para o domínio '{DomainName}': {Error}", domainName, error);
+                _logger.LogWarning("Invalid domain '{DomainName}': {Error}", domainName, error);
                 return Result.ValidationError<DomainDto>(error);
             }
 
@@ -54,7 +53,12 @@ namespace Desafio.Umbler.Features.DomainContext.Services
             var isCacheValid = domain != null && !IsDomainStale(domain);
 
             if (isCacheValid)
+            {
+                _logger.LogInformation("Valid cache for '{DomainName}' (TTL: {Ttl}s, updated {MinutesAgo} min ago)", 
+                    domainName, domain.Ttl, Math.Round((DateTime.UtcNow - domain.UpdatedAt).TotalMinutes, 1));
+                _logger.LogInformation("Returning cached data for '{DomainName}'", domainName);
                 return Result.Ok(domain.ToDto());
+            }
 
             try
             {
@@ -62,22 +66,27 @@ namespace Desafio.Umbler.Features.DomainContext.Services
 
                 if (domain is null)
                 {
+                    _logger.LogInformation("New domain '{DomainName}' - IP: {Ip}, Hosting: {HostedAt}", 
+                        domainName, whoIsResult.Ip ?? "N/A", whoIsResult.HostedAt ?? "N/A");
                     domain = new Domain(domainName, whoIsResult);
 
                     _db.Domains.Add(domain);
                 }
                 else
                 {
+                    _logger.LogInformation("Expired cache for '{DomainName}' - Updating (IP: {Ip}, Hosting: {HostedAt})", 
+                        domainName, whoIsResult.Ip ?? "N/A", whoIsResult.HostedAt ?? "N/A");
                     domain.Update(domainName, whoIsResult);
                 }
 
                 await _db.SaveChangesAsync();
 
+                _logger.LogInformation("Returning updated data for '{DomainName}'", domainName);
                 return Result.Ok(domain.ToDto());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao buscar informações do domínio '{DomainName}'", domainName);
+                _logger.LogError(ex, "Failed to fetch domain information for '{DomainName}'", domainName);
                 return Result.Error<DomainDto>(
                     $"Erro ao buscar informações do domínio '{domainName}'. " +
                     "Verifique se o domínio existe e está acessível.");
