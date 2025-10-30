@@ -5,7 +5,7 @@ using Desafio.Umbler.Features.DomainContext.Services;
 
 namespace Desafio.Umbler.Controllers
 {
-    [Route("api")]
+    [Route("api/domains")]
     [ApiController]
     public class DomainController : BaseController
     {
@@ -21,7 +21,7 @@ namespace Desafio.Umbler.Controllers
         /// </summary>
         /// <param name="domainName">Domain name (e.g.: umbler.com)</param>
         /// <returns>Domain information including IP, Name Servers and Hosting</returns>
-        [HttpGet, Route("domain/{domainName}")]
+        [HttpGet, Route("{domainName}")]
         public async Task<ActionResult<ApiResponse<DomainDto>>> Get(string domainName)
         {
             var result = await _domainService.GetAsync(domainName);

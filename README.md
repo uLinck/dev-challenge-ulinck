@@ -148,10 +148,6 @@ Abaixo estão os detalhes das modificações realizadas:
    - O domínio não chega no serviço com dados inválidos
    - Validações incluem: formato, caracteres especiais, TLD válido segundo IANA, comprimento, hífens, etc
 
-5. **Rota RESTful**
-   - Dei uma corrigida no nome da rota para deixar no padrão RESTful
-   - Endpoint: `GET /api/domain/{domainName}`
-
 ---
 
 ## Models
