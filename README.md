@@ -246,6 +246,8 @@ Abaixo estão os detalhes das modificações realizadas:
 ## Validators
 
 1. **DomainValidator**
+   - As validações seguem o formato tradicional de domínios conforme as RFCs 1035 e 3696, garantindo que o nome seja sintaticamente válido para uso em DNS.
+   - O validador permite o uso de acentuação (ex: café.com, müller.de), pois a lib utilizada converte automaticamente o domínio para o formato ASCII compatível (punycode) antes de realizar as consultas DNS e WHOIS.
    - Implementei validações robustas:
      - Verifica se está vazio ou contém espaços
      - Valida comprimento (3-253 caracteres)
@@ -256,8 +258,7 @@ Abaixo estão os detalhes das modificações realizadas:
        - Não pode ter hífens consecutivos (--)
        - Não pode conter apenas números
      - Usa regex para validar formato geral
-     - Aceita acentuação (café.com, são-paulo.com.br)
-   - Retorna tupla `(bool isValid, string error)` com mensagens claras em português
+   - Retorna tupla `(bool isValid, string error)` com mensagens claras em português visando retornar-las na UI
 
 2. **TldValidator**
    - Implementei validador usando lista oficial da IANA
