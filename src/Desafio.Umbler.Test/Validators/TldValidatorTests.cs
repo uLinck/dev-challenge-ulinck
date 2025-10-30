@@ -1,4 +1,5 @@
 using Desafio.Umbler.Features.DomainContext.Validators;
+using Desafio.Umbler.Shared.Services.TldRegex;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Desafio.Umbler.Test.Validators
@@ -6,11 +7,20 @@ namespace Desafio.Umbler.Test.Validators
     [TestClass]
     public class TldValidatorTests
     {
+        private TldValidator _tldValidator;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            var tldRegexService = new TldRegexService();
+            _tldValidator = new TldValidator(tldRegexService);
+        }
+
         [TestMethod]
         public void IsValidTld_LoadsIanaList_Successfully()
         {
             // Assert
-            Assert.IsTrue(TldValidator.Count > 1000, "Deve carregar mais de 1000 TLDs da lista IANA");
+            Assert.IsTrue(_tldValidator.Count > 1000, "Deve carregar mais de 1000 TLDs da lista IANA");
         }
 
         [TestMethod]
@@ -30,7 +40,7 @@ namespace Desafio.Umbler.Test.Validators
         public void IsValidTld_CommonTlds_ReturnsTrue(string tld)
         {
             // Act
-            var result = TldValidator.IsValidTld(tld);
+            var result = _tldValidator.IsValidTld(tld);
 
             // Assert
             Assert.IsTrue(result, $"TLD '{tld}' deveria ser válido");
@@ -43,7 +53,7 @@ namespace Desafio.Umbler.Test.Validators
         public void IsValidTld_CaseInsensitive_ReturnsTrue(string tld)
         {
             // Act
-            var result = TldValidator.IsValidTld(tld);
+            var result = _tldValidator.IsValidTld(tld);
 
             // Assert
             Assert.IsTrue(result, $"TLD '{tld}' deveria ser válido (case insensitive)");
@@ -59,7 +69,7 @@ namespace Desafio.Umbler.Test.Validators
         public void IsValidTld_InvalidTlds_ReturnsFalse(string tld)
         {
             // Act
-            var result = TldValidator.IsValidTld(tld);
+            var result = _tldValidator.IsValidTld(tld);
 
             // Assert
             Assert.IsFalse(result, $"TLD '{tld}' deveria ser inválido");
@@ -72,7 +82,7 @@ namespace Desafio.Umbler.Test.Validators
         public void IsValidTld_EmptyOrNull_ReturnsFalse(string tld)
         {
             // Act
-            var result = TldValidator.IsValidTld(tld);
+            var result = _tldValidator.IsValidTld(tld);
 
             // Assert
             Assert.IsFalse(result, "TLD vazio ou nulo deveria ser inválido");

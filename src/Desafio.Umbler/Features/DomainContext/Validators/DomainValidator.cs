@@ -3,9 +3,16 @@ using System.Text.RegularExpressions;
 
 namespace Desafio.Umbler.Features.DomainContext.Validators
 {
-    public static class DomainValidator
+    public class DomainValidator : IDomainValidator
     {
-        public static (bool isValid, string error) Validate(string domainName)
+        private readonly ITldValidator _tldValidator;
+
+        public DomainValidator(ITldValidator tldValidator)
+        {
+            _tldValidator = tldValidator;
+        }
+
+        public (bool isValid, string error) Validate(string domainName)
         {
             if (string.IsNullOrWhiteSpace(domainName))
                 return (false, "O domínio não pode ser vazio.");
@@ -24,7 +31,7 @@ namespace Desafio.Umbler.Features.DomainContext.Validators
                 return (false, $"O domínio '{domainName}' deve possuir uma extensão válida (ex: .com, .com.br).");
 
             var tld = labels[^1];
-            if (!TldValidator.IsValidTld(tld))
+            if (!_tldValidator.IsValidTld(tld))
                 return (false, $"O domínio '{domainName}' possui uma extensão inválida '.{tld}'. " +
                     "Use uma extensão válida segundo a IANA (ex: .com, .br, .net, .org, .io).");
 
@@ -56,7 +63,7 @@ namespace Desafio.Umbler.Features.DomainContext.Validators
             if (!DomainRegex.IsMatch(domainName))
                 return (false, $"O domínio '{domainName}' é inválido. " +
                     "Um domínio válido deve conter apenas letras (a-z), números (0-9), hífens, " +
-                    "e caracteres acentuados (à, á, â, ã, é, ê, í, ó, ô, õ, ú, ü, ç), " +
+                    "e caracteres acentuados (á, é, í, ó, ú, à, è, ì, ò, ù, ã, õ, ç), " +
                     "com uma extensão válida segundo a IANA (ex: .com, .br, .net, .io).");
 
             return (true, null);
@@ -64,8 +71,13 @@ namespace Desafio.Umbler.Features.DomainContext.Validators
 
         private static readonly Regex DomainRegex = new Regex
         (
-           @"^(?:[a-zA-Z0-9àáâãéêíóôõúüç](?:[a-zA-Z0-9àáâãéêíóôõúüç-]{0,61}[a-zA-Z0-9àáâãéêíóôõúüç])?\.)+[a-zA-Z]{2,}$",
+           @"^(?:[a-zA-Z0-9áéíóúàèìòùãõç](?:[a-zA-Z0-9áéíóúàèìòùãõç-]{0,61}[a-zA-Z0-9áéíóúàèìòùãõç])?\.)+[a-zA-Z]{2,}$",
            RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
+    }
+
+    public interface IDomainValidator
+    {
+        (bool isValid, string error) Validate(string domainName);
     }
 }

@@ -1,3 +1,7 @@
+@using Desafio.Umbler.Features.DomainContext.Validators
+@using Desafio.Umbler.Shared.Services.TldRegex
+@inject ITldRegexService TldRegexService
+
 <div class="row justify-content-center">
     <div class="col-12 col-lg-10 col-xl-8">
         <div class="d-flex justify-content-center flex-wrap gap-3">
@@ -22,6 +26,7 @@
         ".com",
         ".net",
         ".org",
+        ".io",
         ".app"
     };
 
@@ -36,13 +41,7 @@
 
     private async Task HandleClick(string extension)
     {
-        var cleanValue = System.Text.RegularExpressions.Regex.Replace(
-            CurrentSearchText.Trim(),
-            @"\.(com|net|org|br|com\.br|app|io|dev)$",
-            "",
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase
-        );
-
+        var cleanValue = TldRegexService.TldRemovalRegex.Replace(CurrentSearchText.Trim(), "");
         var newValue = cleanValue + extension;
         await OnExtensionClick.InvokeAsync(newValue);
     }

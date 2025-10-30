@@ -20,19 +20,26 @@ namespace Desafio.Umbler.Features.DomainContext.Services
         private readonly ILookupClient _lookup;
         private readonly ILogger<DomainService> _logger;
         private readonly IWhoIsClient _whoIsClient;
+        private readonly IDomainValidator _domainValidator;
 
-        public DomainService(DatabaseContext db, ILookupClient lookup, ILogger<DomainService> logger, IWhoIsClient whoIsClient)
+        public DomainService(
+            DatabaseContext db, 
+            ILookupClient lookup, 
+            ILogger<DomainService> logger, 
+            IWhoIsClient whoIsClient,
+            IDomainValidator domainValidator)
         {
             _db = db;
             _lookup = lookup;
             _logger = logger;
             _whoIsClient = whoIsClient;
+            _domainValidator = domainValidator;
         }
 
         public async Task<ServiceResult<DomainDto>> GetAsync(string domainName)
         {
             _logger.LogInformation("Validando coerência do domínio: '{DomainName}'", domainName);
-            var (isValid, error) = DomainValidator.Validate(domainName);
+            var (isValid, error) = _domainValidator.Validate(domainName);
             
             if (!isValid)
             {

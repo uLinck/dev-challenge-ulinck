@@ -1,4 +1,5 @@
 using Desafio.Umbler.Features.DomainContext.Validators;
+using Desafio.Umbler.Shared.Services.TldRegex;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Desafio.Umbler.Test.Validators
@@ -6,6 +7,16 @@ namespace Desafio.Umbler.Test.Validators
     [TestClass]
     public class DomainValidatorTests
     {
+        private DomainValidator _domainValidator;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            var tldRegexService = new TldRegexService();
+            var tldValidator = new TldValidator(tldRegexService);
+            _domainValidator = new DomainValidator(tldValidator);
+        }
+
         #region Valid Domains
 
         [TestMethod]
@@ -28,7 +39,7 @@ namespace Desafio.Umbler.Test.Validators
         [DataRow("a-b-c-d.com")]
         public void Validate_ValidDomains_ReturnsTrue(string domain)
         {
-            var (isValid, error) = DomainValidator.Validate(domain);
+            var (isValid, error) = _domainValidator.Validate(domain);
             Assert.IsTrue(isValid, $"Domain '{domain}' should be valid. Error: {error}");
             Assert.IsNull(error, "Valid domain should have no errors");
         }
@@ -56,7 +67,7 @@ namespace Desafio.Umbler.Test.Validators
         [DataRow("domain#test.com", "Um domínio válido deve conter apenas letras")]
         public void Validate_InvalidDomains_ReturnsFalseWithError(string domain, string expectedErrorPart)
         {
-            var (isValid, error) = DomainValidator.Validate(domain);
+            var (isValid, error) = _domainValidator.Validate(domain);
             Assert.IsFalse(isValid, $"Domain '{domain}' should be invalid");
             
             if (expectedErrorPart != null)
@@ -74,7 +85,7 @@ namespace Desafio.Umbler.Test.Validators
         [TestMethod]
         public void Validate_OnlyNumbers_ReturnsError()
         {
-            var (isValid, error) = DomainValidator.Validate("123.com");
+            var (isValid, error) = _domainValidator.Validate("123.com");
             Assert.IsFalse(isValid);
             Assert.IsTrue(error.Contains("apenas números"));
         }
@@ -86,7 +97,7 @@ namespace Desafio.Umbler.Test.Validators
         [DataRow("a--b.com", "hífens consecutivos")]
         public void Validate_InvalidHyphenUsage_ReturnsError(string domain, string expectedErrorPart)
         {
-            var (isValid, error) = DomainValidator.Validate(domain);
+            var (isValid, error) = _domainValidator.Validate(domain);
             Assert.IsFalse(isValid, $"Domain '{domain}' should be invalid");
             Assert.IsTrue(error.Contains(expectedErrorPart), 
                 $"Error '{error}' should contain '{expectedErrorPart}'");
@@ -102,7 +113,7 @@ namespace Desafio.Umbler.Test.Validators
         [DataRow("domain.123")]
         public void Validate_InvalidTLD_ReturnsError(string domain)
         {
-            var (isValid, error) = DomainValidator.Validate(domain);
+            var (isValid, error) = _domainValidator.Validate(domain);
             Assert.IsFalse(isValid, $"Domain '{domain}' should have invalid TLD");
             Assert.IsTrue(error.Contains("extensão inválida") || error.Contains("inválido"));
         }
@@ -111,7 +122,7 @@ namespace Desafio.Umbler.Test.Validators
         public void Validate_LabelTooLong_ReturnsError()
         {
             var longLabel = new string('a', 64) + ".com";
-            var (isValid, error) = DomainValidator.Validate(longLabel);
+            var (isValid, error) = _domainValidator.Validate(longLabel);
             Assert.IsFalse(isValid);
             Assert.IsTrue(error.Contains("excede 63 caracteres"));
         }
@@ -120,7 +131,7 @@ namespace Desafio.Umbler.Test.Validators
         public void Validate_DomainTooLong_ReturnsError()
         {
             var longDomain = new string('a', 250) + ".com";
-            var (isValid, error) = DomainValidator.Validate(longDomain);
+            var (isValid, error) = _domainValidator.Validate(longDomain);
             Assert.IsFalse(isValid);
             Assert.IsTrue(error.Contains("entre 3 e 253 caracteres"));
         }

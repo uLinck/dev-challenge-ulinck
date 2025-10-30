@@ -1,6 +1,8 @@
 ﻿using Desafio.Umbler.Persistence;
 using Desafio.Umbler.Features.DomainContext.Services;
+using Desafio.Umbler.Features.DomainContext.Validators;
 using Desafio.Umbler.Shared.Services.WhoIs;
+using Desafio.Umbler.Shared.Services.TldRegex;
 using DnsClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +38,10 @@ namespace Desafio.Umbler
 
             services.AddSingleton<ILookupClient>(new LookupClient());
             services.AddSingleton<IWhoIsClient, WhoIsClient>();
+            services.AddSingleton<ITldRegexService, TldRegexService>();
 
+            services.AddScoped<ITldValidator, TldValidator>();
+            services.AddScoped<IDomainValidator, DomainValidator>();
             services.AddScoped<IDomainService, DomainService>();
 
             services.AddControllersWithViews();

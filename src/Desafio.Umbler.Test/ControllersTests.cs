@@ -3,7 +3,9 @@ using Desafio.Umbler.Persistence;
 using Desafio.Umbler.Persistence.Models;
 using Desafio.Umbler.Features.DomainContext.Dto;
 using Desafio.Umbler.Features.DomainContext.Services;
+using Desafio.Umbler.Features.DomainContext.Validators;
 using Desafio.Umbler.Shared.Services.WhoIs;
+using Desafio.Umbler.Shared.Services.TldRegex;
 using DnsClient;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +20,14 @@ namespace Desafio.Umbler.Test
 {
     [TestClass]
     public class ControllersTest
-    {       
+    {
+        private DomainValidator CreateDomainValidator()
+        {
+            var tldRegexService = new TldRegexService();
+            var tldValidator = new TldValidator(tldRegexService);
+            return new DomainValidator(tldValidator);
+        }
+
         [TestMethod]
         public async Task Domain_WithValidCache_ReturnsFromCache()
         {
@@ -49,7 +58,8 @@ namespace Desafio.Umbler.Test
                 var mockLookupClient = new Mock<ILookupClient>();
                 var mockWhoisClient = new Mock<IWhoIsClient>();
                 var mockLogger = new Mock<ILogger<DomainService>>();
-                var domainService = new DomainService(db, mockLookupClient.Object, mockLogger.Object, mockWhoisClient.Object);
+                var domainValidator = CreateDomainValidator();
+                var domainService = new DomainService(db, mockLookupClient.Object, mockLogger.Object, mockWhoisClient.Object, domainValidator);
                 var controller = new DomainController(domainService);
 
                 // Act
@@ -89,7 +99,8 @@ namespace Desafio.Umbler.Test
                 var mockLookupClient = new Mock<ILookupClient>();
                 var mockWhoisClient = new Mock<IWhoIsClient>();
                 var mockLogger = new Mock<ILogger<DomainService>>();
-                var domainService = new DomainService(db, mockLookupClient.Object, mockLogger.Object, mockWhoisClient.Object);
+                var domainValidator = CreateDomainValidator();
+                var domainService = new DomainService(db, mockLookupClient.Object, mockLogger.Object, mockWhoisClient.Object, domainValidator);
                 var controller = new DomainController(domainService);
 
                 // Act
@@ -138,7 +149,8 @@ namespace Desafio.Umbler.Test
 
             using (var db = new DatabaseContext(options))
             {
-                var domainService = new DomainService(db, mockLookupClient.Object, mockLogger.Object, mockWhoisClient.Object);
+                var domainValidator = CreateDomainValidator();
+                var domainService = new DomainService(db, mockLookupClient.Object, mockLogger.Object, mockWhoisClient.Object, domainValidator);
                 var controller = new DomainController(domainService);
 
                 // Act
@@ -156,6 +168,5 @@ namespace Desafio.Umbler.Test
                 );
             }
         }
-
     }
 }

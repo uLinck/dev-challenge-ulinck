@@ -2,51 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Desafio.Umbler.Shared.Services.TldRegex;
 
 namespace Desafio.Umbler.Features.DomainContext.Validators
 {
-    public static class TldValidator
+    public class TldValidator : ITldValidator
     {
-        private static readonly HashSet<string> ValidTlds;
+        private readonly ITldRegexService _tldRegexService;
 
-        static TldValidator()
+        public TldValidator(ITldRegexService tldRegexService)
         {
-            try
-            {
-                var tldFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tlds-alpha-by-domain.txt");
-                
-                if (!File.Exists(tldFilePath))
-                {
-                    throw new FileNotFoundException(
-                        $"TLD file not found: {tldFilePath}. " +
-                        "Download from: https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
-                    );
-                }
-
-                var lines = File.ReadAllLines(tldFilePath)
-                    .Where(l => !string.IsNullOrWhiteSpace(l) && !l.StartsWith("#"))
-                    .Select(l => l.ToLowerInvariant());
-
-                ValidTlds = new HashSet<string>(lines, StringComparer.OrdinalIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(
-                    "Error loading valid TLDs list. " +
-                    "Make sure the file 'tlds-alpha-by-domain.txt' exists in the application directory.",
-                    ex
-                );
-            }
+            _tldRegexService = tldRegexService;
         }
 
-        public static bool IsValidTld(string tld)
+        public bool IsValidTld(string tld)
         {
-            if (string.IsNullOrWhiteSpace(tld))
-                return false;
-
-            return ValidTlds.Contains(tld.ToLowerInvariant());
+            return _tldRegexService.IsValidTld(tld);
         }
 
-        public static int Count => ValidTlds.Count;
+        public int Count => _tldRegexService.TldCount;
+    }
+
+    public interface ITldValidator
+    {
+        bool IsValidTld(string tld);
+        int Count { get; }
     }
 }
