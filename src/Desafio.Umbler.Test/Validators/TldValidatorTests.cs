@@ -47,7 +47,7 @@ namespace Desafio.Umbler.Test.Validators
         }
 
         [TestMethod]
-        [DataRow("COM")] // Case insensitive
+        [DataRow("COM")]
         [DataRow("Br")]
         [DataRow("NeT")]
         public void IsValidTld_CaseInsensitive_ReturnsTrue(string tld)
