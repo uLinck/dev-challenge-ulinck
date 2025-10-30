@@ -247,7 +247,7 @@ Abaixo estão os detalhes das modificações realizadas:
 
 1. **DomainValidator**
    - As validações seguem o formato tradicional de domínios conforme as RFCs 1035 e 3696, garantindo que o nome seja sintaticamente válido para uso em DNS.
-   - O validador permite o uso de acentuação (ex: café.com, müller.de), pois a lib utilizada converte automaticamente o domínio para o formato ASCII compatível (punycode) antes de realizar as consultas DNS e WHOIS.
+   - O validador não está barrando o uso de acentuação (ex: café.com, müller.de), pois a lib utilizada converte automaticamente o domínio para o formato ASCII compatível (punycode) antes de realizar as consultas DNS e WHOIS.
    - Implementei validações robustas:
      - Verifica se está vazio ou contém espaços
      - Valida comprimento (3-253 caracteres)
