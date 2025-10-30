@@ -307,6 +307,7 @@ Abaixo estão os detalhes das modificações realizadas:
    - Utilizei Blazor para chamar o serviço de domínio diretamente através de injeção de dependência visando abordagem moderna e prática
    - Isolei componentes da aplicação, deixando a estrutura mais moderna
    - Criei `Index.razor` como componente principal de busca
+   - Separei responsabilidades utilizando uma estrutura intuitiva dentro do contexto de componentes
    - Implementei as configurações necessárias no Startup.cs
 
 2. **Estilização**
@@ -370,7 +371,6 @@ Abaixo estão os detalhes das modificações realizadas:
 - Validação de TLD usando lista oficial IANA (`TldValidator`)
 - Validação antes de consultar banco de dados
 - Normalização de domínios para lowercase (cache consistente)
-- Rota RESTful (`GET /api/domain/{domainName}`)
 - Injeção de dependências correta
 - Abstração do WhoisClient com `IWhoIsClient` para testabilidade
 - Logging estruturado com `ILogger`
