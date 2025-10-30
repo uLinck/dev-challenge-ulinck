@@ -22,7 +22,7 @@ namespace Desafio.Umbler.Controllers
         /// <param name="domainName">Domain name (e.g.: umbler.com)</param>
         /// <returns>Domain information including IP, Name Servers and Hosting</returns>
         [HttpGet, Route("{domainName}")]
-        public async Task<ActionResult<ApiResponse<DomainDto>>> Get(string domainName)
+        public async Task<ActionResult<ApiResponse<DomainDto>>> GetAsync(string domainName)
         {
             var result = await _domainService.GetAsync(domainName);
             return ToResponse(result);

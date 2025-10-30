@@ -93,7 +93,7 @@ namespace Desafio.Umbler.Features.DomainContext.Services
 
         private async Task<WhoIsResult> FetchWhoIsAsync(string domainName)
         {
-            var WhoIs = await _whoIsClient.QueryAsync(domainName);
+            var whoIs = await _whoIsClient.QueryAsync(domainName);
 
             var dnsResult = await _lookup.QueryAsync(domainName, QueryType.A);
             var aRecord = dnsResult.Answers.ARecords().FirstOrDefault();
@@ -110,7 +110,7 @@ namespace Desafio.Umbler.Features.DomainContext.Services
 
             return new WhoIsResult
             {
-                WhoIs = WhoIs.Raw,
+                WhoIs = whoIs.Raw,
                 Ip = ip,
                 Ttl = ttl,
                 HostedAt = hostedAt

@@ -1,0 +1,36 @@
+<div class="d-flex flex-column">
+    <small class="text-white-50 mb-1">@Label</small>
+    <h5 class="mb-0">
+        @if (IsLink && !string.IsNullOrEmpty(Value))
+        {
+            <a href="@LinkUrl" target="_blank" class="text-decoration-none">
+                @Value
+            </a>
+        }
+        else if (!string.IsNullOrEmpty(Value))
+        {
+            <span class="text-white">@Value</span>
+        }
+        else
+        {
+            <span class="text-warning">@EmptyText</span>
+        }
+    </h5>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public bool IsLink { get; set; } = false;
+
+    [Parameter]
+    public string? LinkUrl { get; set; }
+
+    [Parameter]
+    public string EmptyText { get; set; } = "Não disponível";
+}

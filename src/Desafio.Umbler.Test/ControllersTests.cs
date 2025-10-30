@@ -63,7 +63,7 @@ namespace Desafio.Umbler.Test
                 var controller = new DomainController(domainService);
 
                 // Act
-                var response = await controller.Get("test.com");
+                var response = await controller.GetAsync("test.com");
                 var result = response.Result as ObjectResult;
                 var apiResponse = result.Value as ApiResponse<DomainDto>;
                 
@@ -104,7 +104,7 @@ namespace Desafio.Umbler.Test
                 var controller = new DomainController(domainService);
 
                 // Act
-                var response = await controller.Get("invalid");
+                var response = await controller.GetAsync("invalid");
                 var result = response.Result as ObjectResult;
 
                 // Assert
@@ -154,7 +154,7 @@ namespace Desafio.Umbler.Test
                 var controller = new DomainController(domainService);
 
                 // Act
-                var response = await controller.Get("test.com");
+                var response = await controller.GetAsync("test.com");
                 var result = response.Result as ObjectResult;
                 
                 // Assert

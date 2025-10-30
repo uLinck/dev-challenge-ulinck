@@ -1,0 +1,45 @@
+@if (ShouldShow)
+{
+    <div class="alert alert-@AlertType mt-3 @CssClass" role="alert">
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <strong>@Title</strong>
+        }
+        
+        @if (Errors != null && Errors.Count > 0)
+        {
+            <ul class="mb-0 @(string.IsNullOrEmpty(Title) ? "" : "mt-2")">
+                @foreach (var error in Errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        }
+        else if (!string.IsNullOrEmpty(Message))
+        {
+            @Message
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public List<string>? Errors { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string AlertType { get; set; } = "danger";
+
+    [Parameter]
+    public string CssClass { get; set; } = "rounded-3";
+
+    [Parameter]
+    public bool Show { get; set; } = true;
+
+    private bool ShouldShow => Show && (!string.IsNullOrEmpty(Message) || (Errors != null && Errors.Count > 0));
+}

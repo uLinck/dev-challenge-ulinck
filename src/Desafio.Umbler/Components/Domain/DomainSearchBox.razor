@@ -7,11 +7,11 @@
                    class="form-control domain-search-input ps-4 py-3 shadow-none me-1"
                    placeholder="Digite o Domínio que deseja pesquisar"
                    value="@SearchText"
-                   @oninput="@(e => UpdateSearchText(e.Value?.ToString() ?? ""))"
-                   @onkeypress="HandleKeyPress"
+                   @oninput="@(e => UpdateSearchTextAsync(e.Value?.ToString() ?? ""))"
+                   @onkeypress="HandleKeyPressAsync"
                    disabled="@IsLoading"
                    style="font-size: 1.1rem;">
-            <button class="btn btn-primary search-button px-5 py-3 rounded-pill me-2 my-2 fw-semibold" 
+            <button class="btn btn-primary search-button px-5 py-3 rounded-pill me-2 ms-4 my-2 fw-semibold" 
                     type="button"
                     @onclick="OnSearch"
                     disabled="@IsLoading"
@@ -28,25 +28,17 @@
             </button>
         </div>
         
-        @if (HasError && !string.IsNullOrEmpty(ErrorMessage))
-        {
-            <div class="alert alert-danger mt-3 rounded-pill text-center" role="alert">
-                @ErrorMessage
-            </div>
-        }
+        <AlertMessage 
+            Message="@ErrorMessage" 
+            Show="@HasError" 
+            AlertType="danger" 
+            CssClass="rounded-pill text-center" />
 
-        @if (ValidationErrors != null && ValidationErrors.Count > 0)
-        {
-            <div class="alert alert-warning mt-3 rounded-3" role="alert">
-                <strong>Erros de validação:</strong>
-                <ul class="mb-0 mt-2">
-                    @foreach (var error in ValidationErrors)
-                    {
-                        <li>@error</li>
-                    }
-                </ul>
-            </div>
-        }
+        <AlertMessage 
+            Errors="@ValidationErrors" 
+            Title="Erros de validação:" 
+            AlertType="warning" 
+            CssClass="rounded-3" />
     </div>
 </div>
 
@@ -72,13 +64,13 @@
     [Parameter]
     public EventCallback OnSearch { get; set; }
 
-    private async Task UpdateSearchText(string value)
+    private async Task UpdateSearchTextAsync(string value)
     {
         SearchText = value;
         await SearchTextChanged.InvokeAsync(value);
     }
 
-    private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    private async Task HandleKeyPressAsync(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !IsLoading)
         {

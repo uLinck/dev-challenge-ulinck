@@ -5,9 +5,9 @@ namespace Desafio.Umbler.Shared.Services.WhoIs
 {
     public class WhoIsClient : IWhoIsClient
     {
-        public async Task<WhoisResponse> QueryAsync(string query)
+        public Task<WhoisResponse> QueryAsync(string query)
         {
-            return await WhoisClient.QueryAsync(query);
+            return WhoisClient.QueryAsync(query);
         }
     }
 
