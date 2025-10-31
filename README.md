@@ -213,14 +213,7 @@ Abaixo estão os detalhes das modificações realizadas:
    - Deixa o código mais fácil de entender e manter
    - Implementei método `IsDomainStale()` para verificar se cache expirou
 
-6. **Correção de bugs**
-   - Corrigi um bug ao obter os registros DNS do tipo A (`ARecords`)
-   - O código original tentava usar `.ARecords()` que retorna uma coleção `IEnumerable<ARecord>`
-   - Sem o `.FirstOrDefault()`, não era possível acessar as propriedades do registro (como `.Address` e `.TimeToLive`)
-   - Visando isso, utilizei do `.ARecords().FirstOrDefault()` para obter o primeiro registro A do domínio
-   - Isso permite acessar corretamente o IP e TTL do registro DNS
-
-7. **Padronização de resultados com Result Pattern**
+6. **Padronização de resultados com Result Pattern**
    - Criei `ServiceResult<T>` para padronizar retornos do serviço de forma tipada e segura
    - Implementei classe estática `Result` com métodos auxiliares para facilitar criação:
      - `Ok(T data)`: sucesso com dados
